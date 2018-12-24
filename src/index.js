@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Root } from 'app/Root.jsx'
+import { Root } from 'app.jsx'
 import 'index.css';
 import * as serviceWorker from 'serviceWorker.js';
 
