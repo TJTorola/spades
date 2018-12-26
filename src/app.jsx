@@ -25,6 +25,41 @@ const VALUES = {
   TWO:   '2'
 };
 
+export const menuReducer = (state, action) => {
+  switch(action.type) {
+    case 'SELECT_OPTION':
+      return mergeData(state, action.data);
+    
+    case 'START_GAME':
+      return {
+        mode: 'GAME',
+        data: {}
+      };
+
+    default:
+      throw new Error(`MENU_REDUCER: Unhandled switch case ${action.type}`);
+  }
+};
+
+export const mergeData = (state, data) => ({
+  mode: state.mode,
+  data: {
+    ...state.data,
+    ...data
+  }
+});
+
+export const reducer = (state, action) => {
+  switch (state.mode) {
+    case 'MENU':
+      return menuReducer(state, action);
+
+    default:
+      throw new Error(`MAIN_REDUCER: Unhandled switch case ${state.mode}`);
+  }
+};
+
+
 export const Card = ({
   width = 80,
   suit,
@@ -37,9 +72,37 @@ export const Card = ({
   />
 );
 
-export const Root = () => (
-  <div>
-    <Card suit='SPADES' value='ACE' />
-  </div>
+export const Menu = ({ currentSelection }) => (
+  <ul>
+    <li>New Game</li>
+    <li>Settings</li>
+  </ul>
 );
+
+export class Root extends React.Component {
+  state = { 
+    mode: 'MENU',
+    data: {
+      currentSelection: 'NEW_GAME'
+    }
+  }
+
+  dispatch = action => this.setState(reducer(this.state, action));
+
+  render() {
+    switch (this.state.mode) {
+      case "MENU":
+        return <Menu dispatch={this.dispatch} {...this.state.data} />;
+
+      case "SETTINGS":
+        return <div>Placeholder</div>;
+
+      case "PLAYING":
+        return <div>Placeholder</div>;
+
+      default:
+        throw new Error(`ROOT_RENDER: Unhandled switch case ${this.state.mode}`);
+    }
+  }
+}
 
