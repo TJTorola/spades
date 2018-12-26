@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import * as cardSvgs from 'svgs/cards';
+import packageJson from '../package.json';
+import * as cardSvgs from './svgs/cards';
 
 const SUITS = {
   SPADES:   's',
@@ -72,11 +73,22 @@ export const Card = ({
   />
 );
 
+export const Footer = () => (
+  <footer>
+    V { packageJson.version }
+  </footer>
+);
+
 export const Menu = ({ currentSelection }) => (
-  <ul>
-    <li>New Game</li>
-    <li>Settings</li>
-  </ul>
+  <Fragment>
+    <ul>
+      <li>New Game</li>
+      <li>Continue</li>
+      <li>Record</li>
+      <li>Settings</li>
+    </ul>
+    <Footer />
+  </Fragment>
 );
 
 export class Root extends React.Component {
