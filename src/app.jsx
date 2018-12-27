@@ -35,7 +35,8 @@ export const VALUES = {
 // these may get called at require time.
 
 export const makeMenu = options => ({ currentSelection }) => (
-  <section className="Menu-wrapper">
+  <section className="Menu">
+    <Header />
     <ul className="Menu-list">
       {options.map(({ copy, key }) => (
         <li
@@ -182,7 +183,7 @@ export const Card = ({
 );
 
 export const Footer = () => (
-  <footer>
+  <footer class="Footer">
     V { packageJson.version }
   </footer>
 );
@@ -234,4 +235,8 @@ export const RootMenu = makeMenu([
     key: 'SETTINGS',
   }
 ]);
+
+export const Header = () => (
+  <h1 className="Header">Spades</h1>
+);
 
