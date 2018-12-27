@@ -7,6 +7,6 @@ import * as serviceWorker from 'serviceWorker.js';
 
 window.App = App;
 
-ReactDOM.render(<App.Root />, document.getElementById('root'));
+ReactDOM.render(<App.Spades />, document.getElementById('root'));
 
 serviceWorker.unregister();

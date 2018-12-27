@@ -134,21 +134,6 @@ export const cxTests = makeSuite([
   )
 ]);
 
-export const menuReducer = (state, action) => {
-  switch(action.type) {
-    case 'SELECT_OPTION':
-      return mergeData(state, action.data);
-    
-    case 'START_GAME':
-      return {
-        mode: 'GAME',
-        data: {}
-      };
-
-    default:
-      throw new Error(`MENU_REDUCER: Unhandled switch case ${action.type}`);
-  }
-};
 
 export const mergeData = (state, data) => ({
   mode: state.mode,
@@ -158,15 +143,22 @@ export const mergeData = (state, data) => ({
   }
 });
 
-export const reducer = (state, action) => {
-  switch (state.mode) {
-    case 'MENU':
-      return menuReducer(state, action);
-
-    default:
-      throw new Error(`MAIN_REDUCER: Unhandled switch case ${state.mode}`);
-  }
-};
+export const mergeDataTests = makeSuite([
+  assertIs(
+    'mergeData() works',
+    mergeData(
+      {
+        mode: 'TEST',
+        data: {
+          foo: 2,
+          bar: 5
+        }
+      },
+      { foo: 3 }
+    ).data.foo,
+    3
+  )
+]);
 
 // COMPONENTS
 
@@ -183,39 +175,11 @@ export const Card = ({
 );
 
 export const Footer = () => (
-  <footer class="Footer">
+  <footer className="Footer">
     V { packageJson.version }
   </footer>
 );
 
-export class Root extends React.Component {
-  state = { 
-    mode: 'MENU',
-    data: {
-      currentSelection: 'NEW_GAME'
-    }
-  }
-
-  dispatch = action => this.setState(reducer(this.state, action));
-
-  render() {
-    switch (this.state.mode) {
-      case "MENU":
-        return <RootMenu dispatch={this.dispatch} {...this.state.data} />;
-
-      case "SETTINGS":
-        return <div>Placeholder</div>;
-
-      case "PLAYING":
-        return <div>Placeholder</div>;
-
-      default:
-        throw new Error(
-          `ROOT_RENDER: Unhandled switch case ${this.state.mode}`
-        );
-    }
-  }
-}
 
 export const RootMenu = makeMenu([
   {
@@ -240,3 +204,64 @@ export const Header = () => (
   <h1 className="Header">Spades</h1>
 );
 
+// APP STATE LOGIC
+
+export const menuReducer = (state, action) => {
+  switch(action.type) {
+    case 'SELECT_OPTION':
+      return mergeData(state, action.data);
+    
+    case 'START_GAME':
+      return {
+        mode: 'GAME',
+        data: {}
+      };
+
+    default:
+      throw new Error(`MENU_REDUCER: Unhandled switch case ${action.type}`);
+  }
+};
+
+export const reducer = (state, action) => {
+  switch (state.mode) {
+    case 'MENU':
+      return menuReducer(state, action);
+
+    default:
+      throw new Error(`MAIN_REDUCER: Unhandled switch case ${state.mode}`);
+  }
+};
+
+export class Spades extends React.Component {
+  state = { 
+    mode: 'MENU',
+    data: {
+      currentSelection: 'NEW_GAME'
+    }
+  }
+
+  dispatch = action => this.setState(reducer(this.state, action));
+
+  render() {
+    const props = {
+      dispatch: this.dispatch,
+      ...this.state.data
+    };
+
+    switch (this.state.mode) {
+      case "MENU":
+        return <RootMenu {...props} />;
+
+      case "SETTINGS":
+        return <div>Placeholder</div>;
+
+      case "PLAYING":
+        return <div>Placeholder</div>;
+
+      default:
+        throw new Error(
+          `ROOT_RENDER: Unhandled switch case ${this.state.mode}`
+        );
+    }
+  }
+}
