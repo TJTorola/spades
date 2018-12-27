@@ -134,7 +134,6 @@ export const cxTests = makeSuite([
   )
 ]);
 
-
 export const mergeData = (state, data) => ({
   mode: state.mode,
   data: {
@@ -158,6 +157,77 @@ export const mergeDataTests = makeSuite([
     ).data.foo,
     3
   )
+]);
+
+export const typeOf = something => {
+  if (Array.isArray(something)) {
+    return ({
+      type: 'array',
+      isRef: true
+    });
+  } else if (something === null) {
+    return ({
+      type: 'null',
+      isRef: false
+    });
+  } else {
+    const type = typeof something;
+
+    return ({
+      type,
+      isRef: type === 'object'
+    });
+  }
+}
+
+export const typeOfTests = makeSuite([
+  assertIs(
+    'typeOf() works for array type',
+    typeOf([3]).type,
+    'array'
+  ),
+
+  assertIs(
+    'typeOf() works for array isRef',
+    typeOf([]).isRef,
+    true
+  ),
+
+  assertIs(
+    'typeOf() works for object type',
+    typeOf({ foo: 1 }).type,
+    'object'
+  ),
+
+  assertIs(
+    'typeOf() works for object isRef',
+    typeOf([3]).isRef,
+    true
+  ),
+
+  assertIs(
+    'typeOf() works for number type',
+    typeOf(2).type,
+    'number',
+  ),
+
+  assertIs(
+    'typeOf() works for number isRef',
+    typeOf(2).isRef,
+    false
+  ),
+
+  assertIs(
+    'typeOf() works for null type',
+    typeOf(null).type,
+    'null',
+  ),
+
+  assertIs(
+    'typeOf() works for null isRef',
+    typeOf(null).isRef,
+    false
+  ),
 ]);
 
 // COMPONENTS
