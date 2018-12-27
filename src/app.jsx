@@ -1,7 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import packageJson from '../package.json';
 import * as cardSvgs from './svgs/cards';
+
+// STATIC DATA
 
 const SUITS = {
   SPADES:   's',
@@ -25,6 +27,106 @@ const VALUES = {
   THREE: '3',
   TWO:   '2'
 };
+
+// FUNCTIONS
+
+// TODO: Figure out if I can make webpack respect hoisting...
+// Doing this underscore thing to make it happy, while retaining some sense
+// of control, I'm totally in charge here...
+
+export const _makeSuite = tests => () => (
+  tests.reduce((acc, test) => (
+    // NOTE: this short-circuits later tests, maybe good?
+    acc && test()
+  ), true)
+);
+
+export const assertIs = (
+  testDesc,
+  left,
+  right
+) => () => {
+  if (left === right) {
+    console.log(`PASSED: ${testDesc}`);
+    return true;
+  } else {
+    console.error(`FAILED: ${testDesc}`);
+    console.log({
+      left,
+      right
+    });
+    return false;
+  }
+};
+
+/**
+ * Func: cx (classNames) a utility for inlining classname logic
+ *
+ * @param: optionalClasses
+ *   @type: { [className]: Bool }
+ *   @desc: className will be applied if the obj[className] === true
+ * @param defaultClasses
+ *   @type ?String
+ *   @desc classes that will always be applied
+ */
+
+export const cx = (
+  optionalClasses,
+  defaultClasses
+) => (
+  Object.keys(optionalClasses).reduce(
+    (acc, className) => (
+      optionalClasses[className] === true
+        ? [...acc, className]
+        : acc
+    ),
+    (!!defaultClasses ? [defaultClasses] : []) 
+  ).join(' ')
+);
+
+export const cxTests = _makeSuite([
+  assertIs(
+    'cx() correctly applies optionalClasses',
+    cx({
+      foo: true,
+      bar: false
+    }),
+    'foo'
+  ),
+
+  assertIs(
+    'cx() adds defaultClasses',
+    cx({
+      foo: true,
+    }, 'bar'),
+    'bar foo'
+  ),
+
+  assertIs(
+    'cx() adds defaultClasses when there is no else',
+    cx({
+      foo: false,
+    }, 'bar'),
+    'bar'
+  )
+]);
+
+export const makeMenu = options => ({ currentSelection }) => (
+  <section className="Menu-wrapper">
+    <ul className="Menu-list">
+      {options.map(({ copy, key }) => (
+        <li
+          key={key}
+          className="Menu-item"
+        >
+          {copy}
+        </li>
+      ))}
+    </ul>
+    <Footer />
+  </section>
+);
+
 
 export const menuReducer = (state, action) => {
   switch(action.type) {
@@ -60,6 +162,7 @@ export const reducer = (state, action) => {
   }
 };
 
+// COMPONENTS
 
 export const Card = ({
   width = 80,
@@ -79,18 +182,6 @@ export const Footer = () => (
   </footer>
 );
 
-export const Menu = ({ currentSelection }) => (
-  <Fragment>
-    <ul>
-      <li>New Game</li>
-      <li>Continue</li>
-      <li>Record</li>
-      <li>Settings</li>
-    </ul>
-    <Footer />
-  </Fragment>
-);
-
 export class Root extends React.Component {
   state = { 
     mode: 'MENU',
@@ -104,7 +195,7 @@ export class Root extends React.Component {
   render() {
     switch (this.state.mode) {
       case "MENU":
-        return <Menu dispatch={this.dispatch} {...this.state.data} />;
+        return <RootMenu dispatch={this.dispatch} {...this.state.data} />;
 
       case "SETTINGS":
         return <div>Placeholder</div>;
@@ -113,8 +204,29 @@ export class Root extends React.Component {
         return <div>Placeholder</div>;
 
       default:
-        throw new Error(`ROOT_RENDER: Unhandled switch case ${this.state.mode}`);
+        throw new Error(
+          `ROOT_RENDER: Unhandled switch case ${this.state.mode}`
+        );
     }
   }
 }
+
+export const RootMenu = makeMenu([
+  {
+    copy: 'New Game',
+    key: 'NEW_GAME',
+  },
+  {
+    copy: 'Continue',
+    key: 'CONTINUE',
+  },
+  {
+    copy: 'Record',
+    key: 'RECORD',
+  },
+  {
+    copy: 'Settings',
+    key: 'SETTINGS',
+  }
+]);
 
