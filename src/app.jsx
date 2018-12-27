@@ -133,8 +133,6 @@ export const cxTests = makeSuite([
   )
 ]);
 
-
-
 export const menuReducer = (state, action) => {
   switch(action.type) {
     case 'SELECT_OPTION':
