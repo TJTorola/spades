@@ -5,14 +5,14 @@ import * as cardSvgs from './svgs/cards';
 
 // STATIC DATA
 
-const SUITS = {
+export const SUITS = {
   SPADES:   's',
   CLUBS:    'c',
   HEARTS:   'h',
   DIAMONDS: 'd'
 };
 
-const VALUES = {
+export const VALUES = {
   ACE:   'a',
   KING:  'k',
   QUEEN: 'q',
@@ -30,16 +30,38 @@ const VALUES = {
 
 // FUNCTIONS
 
-// TODO: Figure out if I can make webpack respect hoisting...
-// Doing this underscore thing to make it happy, while retaining some sense
-// of control, I'm totally in charge here...
+// HIGHER ORDER
+// Importantly at the top of the file since
+// these may get called at require time.
 
-export const _makeSuite = tests => () => (
+export const makeMenu = options => ({ currentSelection }) => (
+  <section className="Menu-wrapper">
+    <ul className="Menu-list">
+      {options.map(({ copy, key }) => (
+        <li
+          key={key}
+          className={
+            cx({
+              'is-selected': currentSelection === key,
+            }, 'Menu-item')
+          }
+        >
+          {copy}
+        </li>
+      ))}
+    </ul>
+    <Footer />
+  </section>
+);
+
+export const makeSuite = tests => () => (
   tests.reduce((acc, test) => (
     // NOTE: this short-circuits later tests, maybe good?
     acc && test()
   ), true)
 );
+
+// LOWLY (SALT_OF_THE_EARTH) FUNCTIONS
 
 export const assertIs = (
   testDesc,
@@ -84,7 +106,7 @@ export const cx = (
   ).join(' ')
 );
 
-export const cxTests = _makeSuite([
+export const cxTests = makeSuite([
   assertIs(
     'cx() correctly applies optionalClasses',
     cx({
@@ -111,21 +133,6 @@ export const cxTests = _makeSuite([
   )
 ]);
 
-export const makeMenu = options => ({ currentSelection }) => (
-  <section className="Menu-wrapper">
-    <ul className="Menu-list">
-      {options.map(({ copy, key }) => (
-        <li
-          key={key}
-          className="Menu-item"
-        >
-          {copy}
-        </li>
-      ))}
-    </ul>
-    <Footer />
-  </section>
-);
 
 
 export const menuReducer = (state, action) => {
