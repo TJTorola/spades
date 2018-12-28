@@ -1,7 +1,7 @@
 import React from 'react';
+import ReactDom from 'react-dom';
 
 import packageJson from '../package.json';
-import * as cardSvgs from './svgs/cards';
 
 // STATIC DATA
 
@@ -240,7 +240,7 @@ export const Card = ({
   <img
     width={width}
     alt={`The ${value.toLowerCase()} of ${suit.toLowerCase()}`}
-    src={cardSvgs[`${SUITS[suit]}${VALUES[value]}`]}
+    src={`/imgs/cards/${SUITS[suit]}${VALUES[value]}.svg`}
   />
 );
 
@@ -335,3 +335,7 @@ export class Spades extends React.Component {
     }
   }
 }
+
+export const main = nodeId => {
+  ReactDom.render(<Spades />, document.getElementById(nodeId));
+};

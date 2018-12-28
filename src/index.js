@@ -1,12 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-
 import * as App from 'app.jsx'
-import 'index.css';
-import * as serviceWorker from 'serviceWorker.js';
 
-window.App = App;
+// This is _roughly_ just mimicking a UMD style webpack module
+// TODO: Make this a UMD style bundle if create-react-app supports it.
 
-ReactDOM.render(<App.Spades />, document.getElementById('root'));
+window.Spades = App;
 
-serviceWorker.unregister();
