@@ -66,9 +66,10 @@ export const makeSuite = tests => () => (
 
 export const assertIs = (
   testDesc,
-  left,
+  leftFn,
   right
 ) => () => {
+  const left = leftFn();
   if (left === right) {
     console.log(`PASSED: ${testDesc}`);
     return true;
@@ -110,7 +111,7 @@ export const cx = (
 export const cxTests = makeSuite([
   assertIs(
     'cx() correctly applies optionalClasses',
-    cx({
+    () => cx({
       foo: true,
       bar: false
     }),
@@ -119,7 +120,7 @@ export const cxTests = makeSuite([
 
   assertIs(
     'cx() adds defaultClasses',
-    cx({
+    () => cx({
       foo: true,
     }, 'bar'),
     'bar foo'
@@ -127,11 +128,52 @@ export const cxTests = makeSuite([
 
   assertIs(
     'cx() adds defaultClasses when there is no else',
-    cx({
+    () => cx({
       foo: false,
     }, 'bar'),
     'bar'
   )
+]);
+
+export const deepEquals = (left, right) => {
+  if (left === right) {
+    return true;
+  }
+
+  const leftType = typeOf(left);
+  const rightType = typeOf(right);
+
+  if (leftType.type !== rightType.type) {
+    return false;
+  } else if (!leftType.isRef) {
+    return left === right;
+  } else if (leftType.type === 'object') {
+    if (Object.keys(left).every(Object.keys(right).some)) {
+      return Object.keys(left).every(k => (
+        deepEquals(left[k], right[k])
+      ));
+    } else {
+      return false;
+    }
+  } else if (leftType.type === 'array') {
+    if (left.length !== right.length) {
+      return false;
+    } else {
+      return left.every((l, idx) => (
+        deepEquals(l, right[idx])
+      ));
+    }
+  } else {
+    throw new Error(`DEEP_EQUALS: Unhandled type ${leftType.type}`);
+  }
+};
+
+export const deepEqualsTests = makeSuite([
+  assertIs(
+    'deepEquals() handles non-equal types',
+    () => deepEquals(1, 2),
+    false
+  ),
 ]);
 
 export const mergeData = (state, data) => ({
@@ -145,7 +187,7 @@ export const mergeData = (state, data) => ({
 export const mergeDataTests = makeSuite([
   assertIs(
     'mergeData() works',
-    mergeData(
+    () => mergeData(
       {
         mode: 'TEST',
         data: {
@@ -183,49 +225,49 @@ export const typeOf = something => {
 export const typeOfTests = makeSuite([
   assertIs(
     'typeOf() works for array type',
-    typeOf([3]).type,
+    () => typeOf([3]).type,
     'array'
   ),
 
   assertIs(
     'typeOf() works for array isRef',
-    typeOf([]).isRef,
+    () => typeOf([]).isRef,
     true
   ),
 
   assertIs(
     'typeOf() works for object type',
-    typeOf({ foo: 1 }).type,
+    () => typeOf({ foo: 1 }).type,
     'object'
   ),
 
   assertIs(
     'typeOf() works for object isRef',
-    typeOf([3]).isRef,
+    () => typeOf([3]).isRef,
     true
   ),
 
   assertIs(
     'typeOf() works for number type',
-    typeOf(2).type,
+    () => typeOf(2).type,
     'number',
   ),
 
   assertIs(
     'typeOf() works for number isRef',
-    typeOf(2).isRef,
+    () => typeOf(2).isRef,
     false
   ),
 
   assertIs(
     'typeOf() works for null type',
-    typeOf(null).type,
+    () => typeOf(null).type,
     'null',
   ),
 
   assertIs(
     'typeOf() works for null isRef',
-    typeOf(null).isRef,
+    () => typeOf(null).isRef,
     false
   ),
 ]);
@@ -336,6 +378,6 @@ export class Spades extends React.Component {
   }
 }
 
-export const main = nodeId => {
+export const main = ({ nodeId }) => {
   ReactDom.render(<Spades />, document.getElementById(nodeId));
 };
