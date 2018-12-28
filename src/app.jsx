@@ -148,7 +148,7 @@ export const deepEquals = (left, right) => {
   } else if (!leftType.isRef) {
     return left === right;
   } else if (leftType.type === 'object') {
-    if (Object.keys(left).every(Object.keys(right).some)) {
+    if (Object.keys(left).every(k => Object.keys(right).includes(k))) {
       return Object.keys(left).every(k => (
         deepEquals(left[k], right[k])
       ));
@@ -174,6 +174,92 @@ export const deepEqualsTests = makeSuite([
     () => deepEquals(1, 2),
     false
   ),
+
+  assertIs(
+    'deepEquals() handles basic equal types',
+    () => deepEquals(1, 1),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles non-equal objects',
+    () => deepEquals({ foo: 1 }, { foo: 2 }),
+    false
+  ),
+
+  assertIs(
+    'deepEquals() handles equal objects',
+    () => deepEquals({ foo: 1 }, { foo: 1 }),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles nested objects',
+    () => deepEquals({
+      foo: {
+        bar: {
+          baz: 2,
+          bit: 1
+        }
+      }
+    }, {
+      foo: {
+        bar: {
+          bit: 1,
+          baz: 2
+        }
+      }
+    }),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles non-equal arrays',
+    () => deepEquals([1, 2], [2, 1]),
+    false
+  ),
+
+  assertIs(
+    'deepEquals() handles equal arrays',
+    () => deepEquals([1], [1]),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles nested arrays',
+    () => deepEquals([
+      ['foo', 'bar', 'baz'],
+      [1, 2, 3]
+    ], [
+      ['foo', 'bar', 'baz'],
+      [1, 2, 3]
+    ]),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles nested object arrays',
+    () => deepEquals({
+      foo: [1, 2, 3],
+      bar: 'foo'
+    }, {
+      bar: 'foo',
+      foo: [1, 2, 3]
+    }),
+    true
+  ),
+
+  assertIs(
+    'deepEquals() handles nested array objects',
+    () => deepEquals([
+      { foo: 1 },
+      { bar: 2 }
+    ], [
+      { foo: 1 },
+      { bar: 2 }
+    ]),
+    true
+  )
 ]);
 
 export const mergeData = (state, data) => ({
