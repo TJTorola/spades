@@ -64,6 +64,25 @@ export const makeSuite = tests => () => (
 
 // LOWLY (SALT_OF_THE_EARTH) FUNCTIONS
 
+export const assertEquals = (
+  testDesc,
+  leftFn,
+  right
+) => () => {
+  const left = leftFn();
+  if (deepEquals(left, right)) {
+    console.log(`PASSED: ${testDesc}`);
+    return true;
+  } else {
+    console.error(`FAILED: ${testDesc}`);
+    console.log({
+      left,
+      right
+    });
+    return false;
+  }
+};
+
 export const assertIs = (
   testDesc,
   leftFn,
@@ -309,52 +328,40 @@ export const typeOf = something => {
 }
 
 export const typeOfTests = makeSuite([
-  assertIs(
-    'typeOf() works for array type',
-    () => typeOf([3]).type,
-    'array'
+  assertEquals(
+    'typeOf() works for array',
+    () => typeOf([3]),
+    {
+      type: 'array',
+      isRef: true
+    }
   ),
 
-  assertIs(
-    'typeOf() works for array isRef',
-    () => typeOf([]).isRef,
-    true
+  assertEquals(
+    'typeOf() works for object',
+    () => typeOf({ foo: 1 }),
+    {
+      type: 'object',
+      isRef: true
+    }
   ),
 
-  assertIs(
-    'typeOf() works for object type',
-    () => typeOf({ foo: 1 }).type,
-    'object'
+  assertEquals(
+    'typeOf() works for number',
+    () => typeOf(2),
+    {
+      type: 'number',
+      isRef: true
+    }
   ),
 
-  assertIs(
-    'typeOf() works for object isRef',
-    () => typeOf([3]).isRef,
-    true
-  ),
-
-  assertIs(
-    'typeOf() works for number type',
-    () => typeOf(2).type,
-    'number',
-  ),
-
-  assertIs(
-    'typeOf() works for number isRef',
-    () => typeOf(2).isRef,
-    false
-  ),
-
-  assertIs(
-    'typeOf() works for null type',
-    () => typeOf(null).type,
-    'null',
-  ),
-
-  assertIs(
-    'typeOf() works for null isRef',
-    () => typeOf(null).isRef,
-    false
+  assertEquals(
+    'typeOf() works for null',
+    () => typeOf(null),
+    {
+      type: 'null',
+      isRef: true
+    }
   ),
 ]);
 
