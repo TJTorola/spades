@@ -1,11 +1,9 @@
-/* RESET */
+/* RESET/SETUP */
 
 body, h1, h2, h3, h4, h5, h6, ul, ol {
   margin: 0;
   padding: 0;
 }
-
-/* APP */
 
 #root {
   background: #1F5E0D;
@@ -14,14 +12,34 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
   height: 100vh;
 }
 
+/* FOOTER */
+
 .Footer {
   background: #003600;
   padding: 10px;
 }
 
+/* MENU */
+
 .Menu {
   list-style: none;
 }
+
+.Menu-item:before {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+}
+
+.Menu-item.is-selected {
+  font-weight: bold;
+}
+
+.Menu-item.is-selected:before {
+  content: '>';
+}
+
+/* WELCOME SCREEN */
 
 .WelcomeScreen {
   display: grid;
