@@ -40,9 +40,10 @@ export const makeMenu = options => ({ currentSelection }) => (
       <li
         key={key}
         className={
-          cx({
-            'is-selected': currentSelection === key,
-          }, 'Menu-item')
+          cx([
+            { 'is-selected': currentSelection === key },
+            'Menu-item'
+          ])
         }
       >
         {copy}
@@ -101,52 +102,93 @@ export const assertIs = (
 /**
  * Func: cx (classNames) a utility for inlining classname logic
  *
- * @param: optionalClasses
- *   @type: { [className]: Bool }
- *   @desc: className will be applied if the obj[className] === true
- * @param defaultClasses
- *   @type ?String
- *   @desc classes that will always be applied
+ * @param: classChunks 
+ *   @type: Array<?(String | { [className: String]: Boolean }>
+ *   @desc: Chunks of objects to resolve to a single string of classes
+ * @return String
  */
 
 export const cx = (
-  optionalClasses,
-  defaultClasses
-) => (
-  Object.keys(optionalClasses).reduce(
-    (acc, className) => (
-      optionalClasses[className] === true
-        ? [...acc, className]
-        : acc
-    ),
-    (!!defaultClasses ? [defaultClasses] : []) 
-  ).join(' ')
-);
+  classChunks
+) => classChunks.reduce((acc, chunk) => {
+  const chunkType = typeOf(chunk).type;
+  if (chunkType === 'undefined' || chunkType === 'null') {
+    return acc;
+  } else if (chunkType === 'string') {
+    return (chunk !== '')
+      ? (acc !== '')
+        ? `${acc} ${chunk}`
+        : chunk
+      : acc;
+  } else if (chunkType === 'object') {
+    return Object.keys(chunk).reduce(
+      (acc, className) => (
+        chunk[className] === true
+          ? [...acc, className]
+          : acc
+      ),
+      (acc === '' ? [] : [acc])
+    ).join(' ');
+  } else {
+    throw new Error(`CX: invalid chunk type '${chunkType}'`);
+  }
+}, '');
 
 export const cxTests = makeSuite([
   assertIs(
     'cx() correctly applies optionalClasses',
-    () => cx({
+    () => cx([{
       foo: true,
       bar: false
-    }),
+    }]),
     'foo'
   ),
 
   assertIs(
     'cx() adds defaultClasses',
-    () => cx({
+    () => cx([{
       foo: true,
-    }, 'bar'),
-    'bar foo'
+    }, 'bar']),
+    'foo bar'
   ),
 
   assertIs(
     'cx() adds defaultClasses when there is no else',
-    () => cx({
+    () => cx([{
       foo: false,
-    }, 'bar'),
+    }, 'bar']),
     'bar'
+  ),
+
+  assertIs(
+    'cx() allows undefined chunks',
+    () => cx([
+      'foo bar',
+      undefined
+    ]),
+    'foo bar'
+  ),
+
+  assertIs(
+    'cx() allows null chunks',
+    () => cx([
+      'foo bar',
+      null
+    ]),
+    'foo bar'
+  ),
+
+  assertIs(
+    'cx() handles empty chunks',
+    () => cx([
+      'foo',
+      {},
+      'bar',
+      '',
+      'baz',
+      undefined
+    ]),
+    'foo bar baz'
   )
 ]);
 

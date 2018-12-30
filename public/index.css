@@ -25,7 +25,7 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
 
 .WelcomeScreen {
   display: grid;
-  grid-template-rows: auto min-content auto min-content auto min-content;
-  grid-template-columns: auto min-content auto;
+  grid-template-columns: repeat(6, auto);
+  grid-template-rows: repeat(3, auto);
   height: 100%;
 }
