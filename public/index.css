@@ -25,7 +25,26 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
 
 .WelcomeScreen {
   display: grid;
-  grid-template-columns: repeat(6, auto);
+  grid-template-columns: repeat(3, auto);
   grid-template-rows: repeat(3, auto);
   height: 100%;
+}
+
+.WelcomeScreen-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  grid-row: 2;
+  justify-content: center;
+}
+
+.WelcomeScreen-footer {
+  align-self: end;
+  grid-column: 1 / 4;
+  grid-row: 3;
+}
+
+.WelcomeScreen-title {
+  margin-bottom: 1rem;
 }

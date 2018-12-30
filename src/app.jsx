@@ -418,7 +418,10 @@ export const Card = ({
 );
 
 export const Footer = ({ className }) => (
-  <footer className="Footer">
+  <footer className={cx([
+    "Footer",
+    className
+  ])}>
     V { packageJson.version }
   </footer>
 );
@@ -444,14 +447,19 @@ export const RootMenu = makeMenu([
 ]);
 
 export const Title = ({ className }) => (
-  <h1 className={className}>Spades</h1>
+  <h1 className={cx([
+    'Title',
+    className
+  ])}>Spades</h1>
 );
 
 export const WelcomeScreen = ({ children }) => (
   <main className="WelcomeScreen">
-    <Title />
-    {children}
-    <Footer />
+    <section className="WelcomeScreen-content">
+      <Title className="WelcomeScreen-title" />
+      {children}
+    </section>
+    <Footer className="WelcomeScreen-footer" />
   </main>
 );
 
