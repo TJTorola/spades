@@ -20,12 +20,12 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
 }
 
 .Menu {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
+  list-style: none;
 }
 
-.Menu-list {
-  list-style: none;
+.WelcomeScreen {
+  display: grid;
+  grid-template-rows: auto min-content auto min-content auto min-content;
+  grid-template-columns: auto min-content auto;
+  height: 100%;
 }

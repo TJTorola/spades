@@ -35,24 +35,20 @@ export const VALUES = {
 // these may get called at require time.
 
 export const makeMenu = options => ({ currentSelection }) => (
-  <section className="Menu">
-    <Header />
-    <ul className="Menu-list">
-      {options.map(({ copy, key }) => (
-        <li
-          key={key}
-          className={
-            cx({
-              'is-selected': currentSelection === key,
-            }, 'Menu-item')
-          }
-        >
-          {copy}
-        </li>
-      ))}
-    </ul>
-    <Footer />
-  </section>
+  <ul className="Menu">
+    {options.map(({ copy, key }) => (
+      <li
+        key={key}
+        className={
+          cx({
+            'is-selected': currentSelection === key,
+          }, 'Menu-item')
+        }
+      >
+        {copy}
+      </li>
+    ))}
+  </ul>
 );
 
 export const makeSuite = tests => () => (
@@ -379,7 +375,7 @@ export const Card = ({
   />
 );
 
-export const Footer = () => (
+export const Footer = ({ className }) => (
   <footer className="Footer">
     V { packageJson.version }
   </footer>
@@ -405,8 +401,16 @@ export const RootMenu = makeMenu([
   }
 ]);
 
-export const Header = () => (
-  <h1 className="Header">Spades</h1>
+export const Title = ({ className }) => (
+  <h1 className={className}>Spades</h1>
+);
+
+export const WelcomeScreen = ({ children }) => (
+  <main className="WelcomeScreen">
+    <Title />
+    {children}
+    <Footer />
+  </main>
 );
 
 // APP STATE LOGIC
@@ -455,7 +459,11 @@ export class Spades extends React.Component {
 
     switch (this.state.mode) {
       case "MENU":
-        return <RootMenu {...props} />;
+        return (
+          <WelcomeScreen>
+            <RootMenu {...props} />
+          </WelcomeScreen>
+        );
 
       case "SETTINGS":
         return <div>Placeholder</div>;
