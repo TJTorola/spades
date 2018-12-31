@@ -5,6 +5,12 @@ import packageJson from '../package.json';
 
 // STATIC DATA
 
+export const ACTION_TYPES = {
+  SELECT_FOCUSED_OPTION: 'SELECT_FOCUSED_OPTION',
+  SELECT_OPTION: 'SELECT_OPTION',
+  SET_FOCUSED_OPTION: 'SET_FOCUSED_OPTION',
+};
+
 export const ROOT_MENU_CONFIG = [
   {
     copy: 'New Game',
@@ -409,6 +415,70 @@ export const typeOfTests = makeSuite([
   ),
 ]);
 
+export const upperCase = str => (
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+);
+
+export const upperCaseTests = makeSuite([
+  assertIs(
+    'upperCase() works on "foobar"',
+    () => upperCase('foobar'),
+    'Foobar'
+  ),
+
+  assertIs(
+    'upperCase() works on "FOOBAR"',
+    () => upperCase('foobar'),
+    'Foobar'
+  ),
+
+  assertIs(
+    'upperCase() works on "f"',
+    () => upperCase('f'),
+    'F'
+  ),
+
+  assertIs(
+    'upperCase() works on ""',
+    () => upperCase(''),
+    ''
+  )
+]);
+
+export const snakeToCamel = snake => (
+  snake
+    .split('_')
+    .reduce((acc, piece, i) => (
+      `${acc}${i === 0 ? piece.toLowerCase() : upperCase(piece)}`
+    ), '')
+);
+
+export const snakeToCamelTests = makeSuite([
+  assertIs(
+    'snakeToCamel() works on "foobar"',
+    () => snakeToCamel('foo_bar'),
+    'fooBar'
+  ),
+
+  assertIs(
+    'snakeToCamel() works on "FOO_BAR_BAZ"',
+    () => snakeToCamel('FOO_BAR_BAZ'),
+    'fooBarBaz'
+  ),
+
+  assertIs(
+    'snakeToCamel() works on "f"',
+    () => snakeToCamel('f'),
+    'f'
+  ),
+
+  assertIs(
+    'snakeToCamel() works on ""',
+    () => snakeToCamel(''),
+    ''
+  )
+]);
+
 // HIGHER ORDER COMPONENTS
 
 export const withHotKeys = mapPropsToKeys => WrappedComponent => {
@@ -498,16 +568,13 @@ export const WelcomeScreen = ({ children }) => (
 
 // APP STATE LOGIC
 
-export const actions = {
-  setFocusedOption: option => ({
-    type: 'SET_FOCUSED_OPTION',
-    data: { focusedOption: option }
-  }),
-
-  startGame: () => ({
-    type: 'START_GAME'
+export const actions = Object.keys(ACTION_TYPES).reduce((acc, type) => ({
+  ...acc,
+  [snakeToCamel(type)]: data => ({
+    type,
+    data
   })
-};
+}), {});
 
 export const menuReducer = (state, action) => {
   switch(action.type) {
