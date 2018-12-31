@@ -34,17 +34,20 @@ export const VALUES = {
 // Importantly at the top of the file since
 // these may get called at require time.
 
-export const makeMenu = options => ({ currentSelection }) => (
+export const makeMenu = options => ({ currentSelection, dispatch }) => (
   <ul className="Menu">
     {options.map(({ copy, key }) => (
       <li
-        key={key}
+        role="button"
+        tabIndex="0"
+        onMouseEnter={() => dispatch(actions.selectOption(key))}
         className={
           cx([
-            { 'is-selected': currentSelection === key },
-            'Menu-item'
+            'Menu-item',
+            { 'is-selected': currentSelection === key }
           ])
         }
+        key={key}
       >
         {copy}
       </li>
@@ -464,6 +467,17 @@ export const WelcomeScreen = ({ children }) => (
 );
 
 // APP STATE LOGIC
+
+export const actions = {
+  selectOption: option => ({
+    type: 'SELECT_OPTION',
+    data: { currentSelection: option }
+  }),
+
+  startGame: () => ({
+    type: 'START_GAME'
+  })
+};
 
 export const menuReducer = (state, action) => {
   switch(action.type) {
