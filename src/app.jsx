@@ -5,12 +5,6 @@ import packageJson from '../package.json';
 
 // STATIC DATA
 
-export const ACTION_TYPES = {
-  SELECT_FOCUSED_OPTION: 'SELECT_FOCUSED_OPTION',
-  SELECT_OPTION: 'SELECT_OPTION',
-  SET_FOCUSED_OPTION: 'SET_FOCUSED_OPTION',
-};
-
 export const ROOT_MENU_CONFIG = [
   {
     copy: 'New Game',
@@ -115,6 +109,8 @@ export const assertIs = (
  *   @desc: Chunks of objects to resolve to a single string of classes
  * @return String
  */
+
+export const createAction = type => data => ({ type, data });
 
 export const cx = (
   classChunks
@@ -568,13 +564,11 @@ export const WelcomeScreen = ({ children }) => (
 
 // APP STATE LOGIC
 
-export const actions = Object.keys(ACTION_TYPES).reduce((acc, type) => ({
-  ...acc,
-  [snakeToCamel(type)]: data => ({
-    type,
-    data
-  })
-}), {});
+export const actions = {
+  selectFocusedOption: createAction('SELECT_FOCUSED_OPTION'),
+  selectOption: createAction('SELECT_OPTION'),
+  setFocusedOption: createAction('SET_FOCUSED_OPTION'),
+}
 
 export const menuReducer = (state, action) => {
   switch(action.type) {
