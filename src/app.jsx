@@ -53,26 +53,6 @@ export const VALUES = {
 // Importantly at the top of the file since
 // these may get called at require time.
 
-export const makeMenu = options => ({ focusedOption, dispatch }) => (
-  <ul className="Menu">
-    {options.map(({ copy, key }) => (
-      <li
-        role="button"
-        tabIndex="0"
-        onMouseEnter={() => dispatch(actions.setFocusedOption(key))}
-        className={
-          cx([
-            'Menu-item',
-            { 'is-focused': focusedOption === key }
-          ])
-        }
-        key={key}
-      >
-        {copy}
-      </li>
-    ))}
-  </ul>
-);
 
 export const makeSuite = tests => () => (
   tests.reduce((acc, test) => (
@@ -465,8 +445,39 @@ export const Footer = ({ className }) => (
   </footer>
 );
 
+export const Menu = ({
+  focusedOption,
+  onFocus,
+  onItemSelect,
+  options,
+}) => (
+  <ul className="Menu">
+    {options.map(({ copy, key }) => (
+      <li
+        className={
+          cx([
+            'Menu-item',
+            { 'is-focused': focusedOption === key }
+          ])
+        }
+        key={key}
+        onClick={() => onItemSelect(key)}
+        onMouseEnter={() => onFocus(key)}
+        role="button"
+        tabIndex="0"
+      >
+        {copy}
+      </li>
+    ))}
+  </ul>
+);
 
-export const RootMenu = makeMenu(ROOT_MENU_CONFIG);
+export const RootMenu = props => (
+  <Menu
+    options={ROOT_MENU_CONFIG}
+    {...props}
+  />
+);
 
 export const Title = ({ className }) => (
   <h1 className={cx([
@@ -562,16 +573,15 @@ export class Spades extends React.Component {
   dispatch = action => this.setState(reducer(this.state, action));
 
   render() {
-    const props = {
-      dispatch: this.dispatch,
-      ...this.state.data
-    };
-
     switch (this.state.mode) {
       case "MENU":
         return (
           <WelcomeScreen>
-            <RootMenu {...props} />
+            <RootMenu
+              focusedOption={this.state.data.focusedOption}
+              onFocus={key => this.dispatch(actions.setFocusedOption(key))}
+              onItemSelect={console.log}
+            />
           </WelcomeScreen>
         );
 
