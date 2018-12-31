@@ -5,26 +5,24 @@ import packageJson from '../package.json';
 
 // STATIC DATA
 
-export const ROOT_MENU_CONFIG = {
-  OPTIONS: {
-    NEW_GAME: {
-      copy: 'New Game',
-      key: 'NEW_GAME',
-    },
-    CONTINUE: {
-      copy: 'Continue',
-      key: 'CONTINUE',
-    },
-    RECORD: {
-      copy: 'Record',
-      key: 'RECORD',
-    },
-    SETTINGS: {
-      copy: 'Settings',
-      key: 'SETTINGS',
-    }
+export const ROOT_MENU_CONFIG = [
+  {
+    copy: 'New Game',
+    key: 'NEW_GAME',
+  },
+  {
+    copy: 'Continue',
+    key: 'CONTINUE',
+  },
+  {
+    copy: 'Record',
+    key: 'RECORD',
+  },
+  {
+    copy: 'Settings',
+    key: 'SETTINGS',
   }
-};
+];
 
 export const SUITS = {
   SPADES:   's',
@@ -468,12 +466,7 @@ export const Footer = ({ className }) => (
 );
 
 
-export const RootMenu = makeMenu([
-  ROOT_MENU_CONFIG.OPTIONS.NEW_GAME,
-  ROOT_MENU_CONFIG.OPTIONS.CONTINUE,
-  ROOT_MENU_CONFIG.OPTIONS.RECORD,
-  ROOT_MENU_CONFIG.OPTIONS.SETTINGS
-]);
+export const RootMenu = makeMenu(ROOT_MENU_CONFIG);
 
 export const Title = ({ className }) => (
   <h1 className={cx([
@@ -493,6 +486,33 @@ export const WelcomeScreen = ({ children }) => (
 );
 
 // APP STATE LOGIC
+
+export const makeMenuMode = (optionsToModes, menuConfig) => ({
+  INITIAL_DATA: {
+    focusedOption: menuConfig[0].key,
+  },
+  ACTION_HANDLERS: {
+    SET_FOCUSED_OPTION: mergeData,
+  },
+  TRANSITIONS: {
+    SELECT_FOCUSED_OPTION: (state, _) => ({
+      mode: optionsToModes[state.data.focusedOption]
+    }),
+    SELECT_OPTION: (_, action) => ({
+      mode: optionsToModes[action.data.option]
+    }),
+  }
+})
+
+export const STATE_MACHINE = {
+  INITIAL_MODE: 'ROOT_MENU',
+  MODES: {
+    ROOT_MENU: makeMenuMode(
+      { NEW_GAME: 'NEW_GAME_MENU' },
+      ROOT_MENU_CONFIG
+    ),
+  }
+}
 
 export const actions = {
   setFocusedOption: option => ({
