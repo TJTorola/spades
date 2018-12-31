@@ -498,33 +498,6 @@ export const WelcomeScreen = ({ children }) => (
 
 // APP STATE LOGIC
 
-export const makeMenuMode = (optionsToModes, menuConfig) => ({
-  INITIAL_DATA: {
-    focusedOption: menuConfig[0].key,
-  },
-  ACTION_HANDLERS: {
-    SET_FOCUSED_OPTION: mergeData,
-  },
-  TRANSITIONS: {
-    SELECT_FOCUSED_OPTION: (state, _) => ({
-      mode: optionsToModes[state.data.focusedOption]
-    }),
-    SELECT_OPTION: (_, action) => ({
-      mode: optionsToModes[action.data.option]
-    }),
-  }
-})
-
-export const STATE_MACHINE = {
-  INITIAL_MODE: 'ROOT_MENU',
-  MODES: {
-    ROOT_MENU: makeMenuMode(
-      { NEW_GAME: 'NEW_GAME_MENU' },
-      ROOT_MENU_CONFIG
-    ),
-  }
-}
-
 export const actions = {
   setFocusedOption: option => ({
     type: 'SET_FOCUSED_OPTION',
