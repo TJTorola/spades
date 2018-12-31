@@ -322,6 +322,10 @@ export const deepEqualsTests = makeSuite([
   )
 ]);
 
+export const getDisplayName = Component => (
+  Component.displayName || Component.name || 'AnonComponent'
+);
+
 export const mergeData = (state, data) => ({
   mode: state.mode,
   data: {
@@ -405,6 +409,19 @@ export const typeOfTests = makeSuite([
     }
   ),
 ]);
+
+// HIGHER ORDER COMPONENTS
+
+export const withHotKeys = mapPropsToKeys => WrappedComponent => {
+  class WithHotKeys extends React.Component {
+    render() {
+      return <WrappedComponent {...this.props} />;
+    }
+  }
+
+  WithHotKeys.displayName = `WithHotKeys(${getDisplayName(WrappedComponent)})`;
+  return WithHotKeys;
+}
 
 // COMPONENTS
 
