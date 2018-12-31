@@ -5,6 +5,27 @@ import packageJson from '../package.json';
 
 // STATIC DATA
 
+export const ROOT_MENU_CONFIG = {
+  OPTIONS: {
+    NEW_GAME: {
+      copy: 'New Game',
+      key: 'NEW_GAME',
+    },
+    CONTINUE: {
+      copy: 'Continue',
+      key: 'CONTINUE',
+    },
+    RECORD: {
+      copy: 'Record',
+      key: 'RECORD',
+    },
+    SETTINGS: {
+      copy: 'Settings',
+      key: 'SETTINGS',
+    }
+  }
+};
+
 export const SUITS = {
   SPADES:   's',
   CLUBS:    'c',
@@ -34,17 +55,17 @@ export const VALUES = {
 // Importantly at the top of the file since
 // these may get called at require time.
 
-export const makeMenu = options => ({ currentSelection, dispatch }) => (
+export const makeMenu = options => ({ focusedOption, dispatch }) => (
   <ul className="Menu">
     {options.map(({ copy, key }) => (
       <li
         role="button"
         tabIndex="0"
-        onMouseEnter={() => dispatch(actions.selectOption(key))}
+        onMouseEnter={() => dispatch(actions.setFocusedOption(key))}
         className={
           cx([
             'Menu-item',
-            { 'is-selected': currentSelection === key }
+            { 'is-focused': focusedOption === key }
           ])
         }
         key={key}
@@ -448,22 +469,10 @@ export const Footer = ({ className }) => (
 
 
 export const RootMenu = makeMenu([
-  {
-    copy: 'New Game',
-    key: 'NEW_GAME',
-  },
-  {
-    copy: 'Continue',
-    key: 'CONTINUE',
-  },
-  {
-    copy: 'Record',
-    key: 'RECORD',
-  },
-  {
-    copy: 'Settings',
-    key: 'SETTINGS',
-  }
+  ROOT_MENU_CONFIG.OPTIONS.NEW_GAME,
+  ROOT_MENU_CONFIG.OPTIONS.CONTINUE,
+  ROOT_MENU_CONFIG.OPTIONS.RECORD,
+  ROOT_MENU_CONFIG.OPTIONS.SETTINGS
 ]);
 
 export const Title = ({ className }) => (
@@ -486,9 +495,9 @@ export const WelcomeScreen = ({ children }) => (
 // APP STATE LOGIC
 
 export const actions = {
-  selectOption: option => ({
-    type: 'SELECT_OPTION',
-    data: { currentSelection: option }
+  setFocusedOption: option => ({
+    type: 'SET_FOCUSED_OPTION',
+    data: { focusedOption: option }
   }),
 
   startGame: () => ({
@@ -498,7 +507,7 @@ export const actions = {
 
 export const menuReducer = (state, action) => {
   switch(action.type) {
-    case 'SELECT_OPTION':
+    case 'SET_FOCUSED_OPTION':
       return mergeData(state, action.data);
     
     case 'START_GAME':
@@ -526,7 +535,7 @@ export class Spades extends React.Component {
   state = { 
     mode: 'MENU',
     data: {
-      currentSelection: 'NEW_GAME'
+      focusedOption: 'NEW_GAME'
     }
   }
 
