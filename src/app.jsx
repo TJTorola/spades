@@ -4,7 +4,6 @@ import ReactDom from 'react-dom';
 import {
   cx,
   getDisplayName,
-  setField,
 } from './lib.js';
 import packageJson from '../package.json';
 
@@ -143,31 +142,18 @@ export const Footer = ({ className }) => (
   </footer>
 );
 
-export const Menu = ({
-  focusedOption,
-  onFocus,
-  onItemSelect,
-  options,
-}) => (
+export const Menu = ({ children }) => (
   <ul className="Menu">
-    {options.map(({ copy, key }) => (
-      <li
-        className={
-          cx([
-            'Menu-item',
-            { 'is-focused': focusedOption === key }
-          ])
-        }
-        key={key}
-        onClick={() => onItemSelect(key)}
-        onMouseEnter={() => onFocus(key)}
-        role="button"
-        tabIndex="0"
-      >
-        {copy}
-      </li>
-    ))}
+    { children }
   </ul>
+);
+
+export const MenuItem = ({ to, children }) => (
+  <a href={`#${to}`}>
+    <li className="Menu-item">
+      { children }
+    </li>
+  </a>
 );
 
 export const Title = ({ className }) => (
@@ -189,97 +175,98 @@ export const WelcomeScreen = ({ children }) => (
 
 // APP STATE LOGIC
 
-const setMode = mode => () => ({ mode });
+export const Play = () => <div>Play Stub</div>;
 
-export const Spades = withStateMachine({
-  initialMode: 'ROOT_MENU',
-  modes: {
-    ROOT_MENU: {
-      initialState: {},
-      actions: {
-        setFocusedOption: setField('focusedOption')
-      },
-      transitions: {
-        newGame: setMode('GAME_VARIANT_MENU'),
-        continue: setMode('PLAYING'),
-        records: setMode('RECORDS'),
-        settings: setMode('SETTINGS_MENU')
-      },
-    },
-    SETTINGS_MENU: {
-      initialState: {},
-      actions: {},
-      transitions: {}
-    },
-    PLAYING: {
-      initialState: {},
-      actions: {},
-      transitions: {}
-    }
+export const Records = () => <div>Records Stub</div>;
+
+export const Root = () => (
+  <WelcomeScreen>
+    <Menu>
+      <MenuItem to='/select-variant'>New Game</MenuItem>
+      <MenuItem to='/play'>Continue</MenuItem>
+      <MenuItem to='/records'>Records</MenuItem>
+      <MenuItem to='/settings'>Settings</MenuItem>
+    </Menu>
+  </WelcomeScreen>
+);
+
+export const SelectLevel = () => (
+  <WelcomeScreen>
+    <Menu>
+      <MenuItem to='/play'>1</MenuItem>
+      <MenuItem to='/play'>2</MenuItem>
+      <MenuItem to='/play'>3</MenuItem>
+      <MenuItem to='/play'>4</MenuItem>
+      <MenuItem to='/play'>5</MenuItem>
+    </Menu>
+  </WelcomeScreen>
+);
+
+export const Settings = () => <div>Settings Stub</div>;
+
+export const Variants = () => (
+  <WelcomeScreen>
+    <Menu>
+      <MenuItem to='/select-level'>Standard</MenuItem>
+      <MenuItem to='/select-level'>Whiz</MenuItem>
+      <MenuItem to='/select-level'>Suicide</MenuItem>
+      <MenuItem to='/select-level'>Free for All</MenuItem>
+    </Menu>
+  </WelcomeScreen>
+);
+
+export const ROUTES = [
+  {
+    path: "/",
+    component: Root,
+  },
+  {
+    path: '/select-variant',
+    component: Variants,
+  },
+  {
+    path: `/select-level`,
+    component: SelectLevel,
+  },
+  {
+    path: '/play',
+    component: Play,
   }
-})(({
-  mode,
-  data,
-  actions,
-  transitions
-}) => {
-  switch (mode) {
-    case "ROOT_MENU":
-      return (
-        <WelcomeScreen>
-          <Menu
-            options={[
-              {
-                copy: 'New Game',
-                key: 'NEW_GAME',
-              },
-              {
-                copy: 'Continue',
-                key: 'CONTINUE',
-              },
-              {
-                copy: 'Record',
-                key: 'RECORD',
-              },
-              {
-                copy: 'Settings',
-                key: 'SETTINGS',
-              }
-            ]}
-            focusedOption={data.focusedOption}
-            onFocus={actions.setFocusedOption}
-            onItemSelect={key => {
-              switch (key) {
-                case 'NEW_GAME':
-                  return transitions.newGame();
-                case 'CONTINUE':
-                  return transitions.continue();
-                case 'RECORD':
-                  return transitions.records();
-                case 'SETTINGS':
-                  return transitions.settings();
-                default:
-                  throw new Error(
-                    `ROOT_MENU_SELECT: Unhandled switch case ${key}`
-                  );
-              }
-            }}
-          />
-        </WelcomeScreen>
-      );
+];
 
-    case "SETTINGS_MENU":
-      return <div>Settings placeholder</div>;
-
-    case "PLAYING":
-      return <div>Playing placeholder</div>;
-
-    default:
-      throw new Error(
-        `ROOT_RENDER: Unhandled switch case ${this.state.mode}`
-      );
+export class Spades extends React.Component {
+  state = {
+    hash: window.location.hash
   }
-})
+
+  componentDidMount() {
+    window.addEventListener('hashchange', this.setHash);
+  }
+
+  componentWillDismount() {
+    window.removeEventListener('hashchange', this.setHash);
+  }
+
+  setHash = () => {
+    this.setState({ hash: window.location.hash });
+  }
+
+  getCurrentComponent = () => {
+    const { hash } = this.state;
+    const path = (hash === '' || hash === '#')
+      ? '/'
+      : hash.slice(1);
+
+    const route = ROUTES.find(r => r.path === path);
+    return !!route
+      ? React.createElement(route.component)
+      : null; // TODO: Add some sort of 404 here.
+  }
+
+  render() {
+    return this.getCurrentComponent();
+  }
+}
 
 export const main = ({ nodeId }) => {
   ReactDom.render(<Spades />, document.getElementById(nodeId));

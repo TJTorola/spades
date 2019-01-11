@@ -5,6 +5,12 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
   padding: 0;
 }
 
+a {
+  /* TODO: get a proper reset here */
+  color: white;
+  text-decoration: none;
+}
+
 #root {
   background: #1F5E0D;
   color: white;
@@ -35,13 +41,13 @@ body, h1, h2, h3, h4, h5, h6, ul, ol {
   width: 1rem;
 }
 
-.Menu-item.is-focused {
+.Menu-item:hover, .Menu-item:focus {
   /* Using text-shadow here instead of bold as a */
   /* hacky way to prevent the container from resizing */
   text-shadow: -0.06ex 0 white, 0.06ex 0 white;
 }
 
-.Menu-item.is-focused:before {
+.Menu-item:hover:before, .Menu-item:focus:before {
   content: '>';
 }
 
