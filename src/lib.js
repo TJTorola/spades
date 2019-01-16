@@ -344,6 +344,36 @@ export const mergeDataTests = makeSuite([
   )
 ]);
 
+const PARAMS_SCHEMA = {
+  foo: {
+    validate: v => /^[0-9]+$/.test(v),
+    parse: v => parseInt(v, 10)
+  },
+  bar: {
+    validate: /^(foo|bar|baz)$/,
+  }
+};
+
+export const params = {
+  get: key => {
+    if (!Object.keys(PARAMS_SCHEMA).includes(key)) {
+      throw new Error(`Cannot get key "${key}" that does not exist in schema`);
+    }
+    const validate = PARAMS_SCHEMA[key].validate || (() => true);
+    const parse = PARAMS_SCHEMA[key].parse || (v => v);
+
+    const value = (new URL(window.location.href)).searchParams.get(key);
+    if (validate(value)) {
+      return parse(value);
+    } else {
+      return;
+    }
+  },
+  set: (key, value) => {
+
+  }
+};
+
 export const setField = field => (stateData, actionData) => ({
   ...stateData,
   [field]: actionData
